@@ -11,40 +11,39 @@
             margin: 0; 
             height: 100vh; 
             display: flex; 
-            flex-direction: row; /* 水平排列 */
+            flex-direction: row; 
             align-items: center;
             justify-content: center;
             overflow: hidden; 
         }
         
-        /* 左側資訊欄 */
+        /* 左側資訊欄 - 文字縮小 30% */
         #side-panel {
-            width: 280px;
-            padding: 40px;
+            width: 200px; /* 調整寬度以適應縮小的文字 */
+            padding: 20px 40px;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
             justify-content: center;
-            gap: 25px;
+            gap: 15px;
         }
 
         h2 { 
             margin: 0; 
             color: #2c3e50; 
-            font-size: 2.2rem;
+            font-size: 1.54rem; /* 原 2.2rem * 0.7 */
             line-height: 1.2;
             text-shadow: 1px 1px 0 white;
         }
 
         #turn-card { 
-            padding: 12px 30px; 
+            padding: 8px 20px; 
             border-radius: 50px; 
             color: white; 
             background: var(--p1-red); 
             font-weight: bold;
-            font-size: 1.3rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+            font-size: 0.91rem; /* 原 1.3rem * 0.7 */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         /* 遊戲區域 */
@@ -56,10 +55,11 @@
             justify-content: center;
         }
 
+        /* 遊戲格子整體放大 20% */
         .board-wrapper { 
             background: white; 
-            padding: 20px; 
-            border-radius: 25px; 
+            padding: 24px; 
+            border-radius: 30px; 
             box-shadow: 0 15px 40px rgba(0,0,0,0.12); 
             border: 6px solid #d1d8e0; 
             position: relative; 
@@ -67,25 +67,29 @@
         
         #game-board { 
             display: grid; 
-            grid-template-columns: repeat(7, 85px); 
-            grid-template-rows: repeat(4, 85px); 
-            gap: 6px; 
+            /* 格子大小放大 20%: 85px * 1.2 = 102px */
+            grid-template-columns: repeat(7, 102px); 
+            grid-template-rows: repeat(4, 102px); 
+            gap: 7px; 
             position: relative; 
         }
         
         .cell { 
             background: #fff; 
             border: 2px solid #f1f2f6; 
-            border-radius: 12px; 
+            border-radius: 14px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             position: relative; 
         }
         
-        .cell .icon { font-size: 2.8rem; z-index: 1; margin-top: -12px; }
+        .cell .icon { 
+            font-size: 3.36rem; /* 圖案也隨之放大 20%: 2.8rem * 1.2 */
+            z-index: 1; 
+            margin-top: -15px; 
+        }
         
-        /* 中間藝術文字 - 縮小 20% */
         #center-text {
             position: absolute;
             top: 50%;
@@ -107,8 +111,8 @@
             filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.1));
         }
         
-        .q-text { font-size: 1.76rem; margin-bottom: 8px; } /* 原2.2rem * 0.8 */
-        .a-text { font-size: 1.44rem; color: #57606f; -webkit-text-fill-color: initial; background: none; } /* 原1.8rem * 0.8 */
+        .q-text { font-size: 1.76rem; margin-bottom: 8px; }
+        .a-text { font-size: 1.44rem; color: #57606f; -webkit-text-fill-color: initial; background: none; }
         
         /* 棋子 */
         .token { 
@@ -116,13 +120,13 @@
             z-index: 100; 
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             pointer-events: none; 
-            width: 26px; 
-            height: 26px; 
+            width: 30px; /* 棋子微調放大 */
+            height: 30px; 
             filter: drop-shadow(1px 1px 3px rgba(0,0,0,0.3)); 
         }
         
         #controls {
-            margin-top: 25px;
+            margin-top: 30px;
             display: flex;
             gap: 20px;
             align-items: center;
@@ -140,8 +144,6 @@
             color: white; 
         }
         .win-face { width: 120px; height: 120px; margin-bottom: 20px; }
-        .confetti { position: absolute; width: 10px; height: 10px; animation: fall linear forwards; }
-        @keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -206,16 +208,15 @@
         [0, 1].forEach(i => {
             const cell = document.getElementById(`cell-${playerPos[i]}`);
             const t = document.getElementById(i === 0 ? 'p1-token' : 'p2-token');
-            
-            // 計算置中位置：水平置中，垂直定位在圖案下方
             const centerX = cell.offsetLeft + (cell.offsetWidth / 2) - (t.offsetWidth / 2);
-            const baseY = cell.offsetTop + 54; 
+            // 配合放大後的格子調整高度 (102px格子的置中下方)
+            const baseY = cell.offsetTop + 68; 
 
             if (i === 0) {
-                t.style.left = (centerX - 14) + "px"; // P1 略偏左
+                t.style.left = (centerX - 18) + "px";
                 t.style.top = baseY + "px";
             } else {
-                t.style.left = (centerX + 14) + "px"; // P2 略偏右
+                t.style.left = (centerX + 18) + "px";
                 t.style.top = baseY + "px";
             }
         });
@@ -235,16 +236,12 @@
             }
         }
         
-        // 特殊格子邏輯
         const currentTile = boardItems[playerPos[currentPlayer]];
-        
-        // 1. 停在 RUN (Go!) 自動前進一格
         if (currentTile.name === "Go!" && playerPos[currentPlayer] < boardItems.length - 1) {
             await new Promise(r => setTimeout(r, 600));
             playerPos[currentPlayer]++;
             updateTokens();
         } 
-        // 2. 停在 Back 後退一格
         else if (currentTile.name === "Back" && playerPos[currentPlayer] > 0) {
             await new Promise(r => setTimeout(r, 600));
             playerPos[currentPlayer]--;
@@ -266,19 +263,9 @@
     function showWin() {
         const winnerSVG = document.getElementById(currentPlayer === 0 ? 'p1-token' : 'p2-token').innerHTML;
         document.getElementById('winner-face-container').innerHTML = `<svg viewBox="0 0 100 100">${winnerSVG}</svg>`;
-        document.getElementById('winner-text').innerText = `Player ${currentPlayer + 1} WINS!`;
         document.getElementById('win-overlay').style.display = 'flex';
-        for(let i=0; i<60; i++) spawnConfetti();
     }
 
-    function spawnConfetti() {
-        const c = document.createElement('div'); c.className = 'confetti';
-        c.style.left = Math.random() * 100 + 'vw';
-        c.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
-        c.style.animationDuration = (Math.random() * 2 + 1) + 's';
-        document.body.appendChild(c);
-        setTimeout(() => c.remove(), 3000);
-    }
     init();
 </script>
 </body>
