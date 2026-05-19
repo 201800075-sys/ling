@@ -5,15 +5,87 @@
     <title>Farmers' Adventure</title>
     <style>
         :root { --p1-red: #ff4757; --p2-yellow: #f1c40f; }
-        body { font-family: 'Arial', sans-serif; background: #fdf6e3; margin: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; overflow: hidden; }
+        body { 
+            font-family: 'Arial', sans-serif; 
+            background: #fdf6e3; 
+            margin: 0; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: row; /* 水平排列 */
+            align-items: center;
+            justify-content: center;
+            overflow: hidden; 
+        }
         
-        #game-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; position: relative; }
-        .board-wrapper { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 5px solid #d1d8e0; position: relative; }
+        /* 左側資訊欄 */
+        #side-panel {
+            width: 280px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        h2 { 
+            margin: 0; 
+            color: #2c3e50; 
+            font-size: 2.2rem;
+            line-height: 1.2;
+            text-shadow: 1px 1px 0 white;
+        }
+
+        #turn-card { 
+            padding: 12px 30px; 
+            border-radius: 50px; 
+            color: white; 
+            background: var(--p1-red); 
+            font-weight: bold;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        /* 遊戲區域 */
+        #main-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .board-wrapper { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 25px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12); 
+            border: 6px solid #d1d8e0; 
+            position: relative; 
+        }
         
-        #game-board { display: grid; grid-template-columns: repeat(7, 85px); grid-template-rows: repeat(4, 85px); gap: 5px; position: relative; }
-        .cell { background: #fff; border: 2px solid #f1f2f6; border-radius: 10px; display: flex; align-items: center; justify-content: center; position: relative; }
-        .cell .icon { font-size: 2.8rem; z-index: 1; margin-top: -10px; }
+        #game-board { 
+            display: grid; 
+            grid-template-columns: repeat(7, 85px); 
+            grid-template-rows: repeat(4, 85px); 
+            gap: 6px; 
+            position: relative; 
+        }
         
+        .cell { 
+            background: #fff; 
+            border: 2px solid #f1f2f6; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            position: relative; 
+        }
+        
+        .cell .icon { font-size: 2.8rem; z-index: 1; margin-top: -12px; }
+        
+        /* 中間藝術文字 - 縮小 20% */
         #center-text {
             position: absolute;
             top: 50%;
@@ -22,31 +94,51 @@
             text-align: center;
             pointer-events: none;
             z-index: 2;
-            width: 80%;
+            width: 85%;
         }
+        
         .art-text {
             font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
             background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-weight: 900;
-            line-height: 1.2;
+            line-height: 1.3;
             filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.1));
         }
-        .q-text { font-size: 1.76rem; margin-bottom: 8px; }
-        .a-text { font-size: 1.44rem; color: #57606f; -webkit-text-fill-color: initial; background: none; }
         
+        .q-text { font-size: 1.76rem; margin-bottom: 8px; } /* 原2.2rem * 0.8 */
+        .a-text { font-size: 1.44rem; color: #57606f; -webkit-text-fill-color: initial; background: none; } /* 原1.8rem * 0.8 */
+        
+        /* 棋子 */
         .token { 
             position: absolute; 
             z-index: 100; 
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             pointer-events: none; 
-            width: 25px; 
-            height: 25px; 
-            filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3)); 
+            width: 26px; 
+            height: 26px; 
+            filter: drop-shadow(1px 1px 3px rgba(0,0,0,0.3)); 
         }
         
-        #win-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; color: white; }
+        #controls {
+            margin-top: 25px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        #win-overlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.9); 
+            z-index: 1000; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+        }
         .win-face { width: 120px; height: 120px; margin-bottom: 20px; }
         .confetti { position: absolute; width: 10px; height: 10px; animation: fall linear forwards; }
         @keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
@@ -54,12 +146,12 @@
 </head>
 <body>
 
-    <div style="text-align:center; margin-top:10px;">
-        <h2 style="margin:5px;">Farmers' Adventure</h2>
-        <div id="turn-card" style="padding: 5px 20px; border-radius: 20px; color: white; background: var(--p1-red); display: inline-block; font-weight: bold;">Player 1's Turn</div>
+    <div id="side-panel">
+        <h2>Farmers'<br>Adventure</h2>
+        <div id="turn-card">Player 1's Turn</div>
     </div>
 
-    <div id="game-container">
+    <div id="main-area">
         <div class="board-wrapper">
             <div id="center-text">
                 <div class="art-text q-text">Can you see the ......?</div>
@@ -71,17 +163,17 @@
                 <div id="p2-token" class="token"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#f1c40f" stroke="white" stroke-width="8"/><circle cx="35" cy="40" r="8" fill="black"/><circle cx="65" cy="40" r="8" fill="black"/><path d="M30 70 Q50 85 70 70" stroke="black" stroke-width="10" fill="none"/></svg></div>
             </div>
         </div>
-    </div>
 
-    <div style="margin-bottom:15px; display:flex; gap:15px; align-items:center;">
-        <button onclick="playGame()" style="padding:15px 30px; font-size:1.2rem; border-radius:10px; background:#2ed573; color:white; border:none; cursor:pointer; font-weight:bold; box-shadow: 0 4px #26af5c;">🎲 ROLL</button>
-        <div id="dice-result" style="width:60px; height:60px; background:white; border:3px solid #333; border-radius:15px; display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:bold;">?</div>
+        <div id="controls">
+            <button onclick="playGame()" style="padding:15px 35px; font-size:1.3rem; border-radius:12px; background:#2ed573; color:white; border:none; cursor:pointer; font-weight:bold; box-shadow: 0 4px #26af5c;">🎲 ROLL</button>
+            <div id="dice-result" style="width:65px; height:65px; background:white; border:3px solid #333; border-radius:18px; display:flex; align-items:center; justify-content:center; font-size:2.2rem; font-weight:bold;">?</div>
+        </div>
     </div>
 
     <div id="win-overlay">
         <div id="winner-face-container" class="win-face"></div>
         <h1 id="winner-text">PLAYER WINS!</h1>
-        <button onclick="location.reload()" style="padding:10px 20px; font-size:1.2rem;">Play Again</button>
+        <button onclick="location.reload()" style="padding:12px 25px; font-size:1.2rem; cursor:pointer;">Play Again</button>
     </div>
 
 <script>
@@ -114,14 +206,16 @@
         [0, 1].forEach(i => {
             const cell = document.getElementById(`cell-${playerPos[i]}`);
             const t = document.getElementById(i === 0 ? 'p1-token' : 'p2-token');
+            
+            // 計算置中位置：水平置中，垂直定位在圖案下方
             const centerX = cell.offsetLeft + (cell.offsetWidth / 2) - (t.offsetWidth / 2);
-            const baseY = cell.offsetTop + 55;
+            const baseY = cell.offsetTop + 54; 
 
             if (i === 0) {
-                t.style.left = (centerX - 15) + "px";
+                t.style.left = (centerX - 14) + "px"; // P1 略偏左
                 t.style.top = baseY + "px";
             } else {
-                t.style.left = (centerX + 15) + "px";
+                t.style.left = (centerX + 14) + "px"; // P2 略偏右
                 t.style.top = baseY + "px";
             }
         });
@@ -141,18 +235,18 @@
             }
         }
         
-        // 觸發格子的特殊功能
+        // 特殊格子邏輯
         const currentTile = boardItems[playerPos[currentPlayer]];
         
-        // 功能 1: 停在 "Go!" (RUN🏃) 自動往前走一格
+        // 1. 停在 RUN (Go!) 自動前進一格
         if (currentTile.name === "Go!" && playerPos[currentPlayer] < boardItems.length - 1) {
-            await new Promise(r => setTimeout(r, 500)); // 停頓一下讓玩家看清楚
+            await new Promise(r => setTimeout(r, 600));
             playerPos[currentPlayer]++;
             updateTokens();
         } 
-        // 功能 2: 停在 "Back" 格，退回一格
+        // 2. 停在 Back 後退一格
         else if (currentTile.name === "Back" && playerPos[currentPlayer] > 0) {
-            await new Promise(r => setTimeout(r, 500));
+            await new Promise(r => setTimeout(r, 600));
             playerPos[currentPlayer]--;
             updateTokens();
         }
